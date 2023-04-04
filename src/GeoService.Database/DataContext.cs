@@ -7,6 +7,7 @@ public sealed class DataContext : DbContext
     public DbSet<Manhole> Manholes { get; set; } = default!;
     public DbSet<Route> Routes { get; set; } = default!;
     public DbSet<Splitter> Splitters { get; set; } = default!;
+    public DbSet<Polygon> Polygons { get; set; } = default!;
 
     public string DbPath { get; }
 

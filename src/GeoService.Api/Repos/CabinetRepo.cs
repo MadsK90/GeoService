@@ -69,6 +69,9 @@ public sealed class CabinetRepo : ICabinetRepo
 
     public async Task<bool> UpdateCabinet(Cabinet cabinet)
     {
+        if (!await _context.Cabinets.AnyAsync(x => x.Id == cabinet.Id))
+            return false;
+
         _context.Cabinets.Update(cabinet);
 
         return await SaveChanges();
