@@ -29,4 +29,12 @@ public static class ApiRoutes
         public const string DeleteManhole = $"{Base}/manholes/{{id}}";
         public const string UpdateManhole = $"{Base}/manholes";
     }
+
+    public static class Polygons
+    {
+        public const string GetPolygonById = $"{Base}/polygons/{{id}}";
+        public const string CreatePolygon = $"{Base}/polygons";
+        public const string DeletePolygon = $"{Base}/polygons/{{id}}";
+        public const string UpdatePolygon = $"{Base}/polygons";
+    }
 }

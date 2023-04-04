@@ -47,7 +47,8 @@ static void AddEndpoints(WebApplication app)
 {
     AddCabinetEndpoints(app);
     AddFibreEndpoints(app);
-    AddManholeEnpoints(app);
+    AddManholeEndpoints(app);
+    AddPolygonEndpoints(app);
 
     #region Local Functions
 
@@ -93,7 +94,7 @@ static void AddEndpoints(WebApplication app)
             .WithTags("fibre");
     }
 
-    static void AddManholeEnpoints(WebApplication app)
+    static void AddManholeEndpoints(WebApplication app)
     {
         app.MediatePost<CreateManholeRequest, CreateManholeResponse>(ApiRoutes.Manholes.CreateManhole)
             .CacheOutput()
@@ -112,6 +113,27 @@ static void AddEndpoints(WebApplication app)
         app.MediatePut<UpdateManholeRequest, UpdateManholeResponse>(ApiRoutes.Manholes.UpdateManhole)
             .CacheOutput()
             .WithTags("manhole");
+    }
+
+    static void AddPolygonEndpoints(WebApplication app)
+    {
+        app.MediatePost<CreatePolygonRequest, CreatePolygonResponse>(ApiRoutes.Polygons.CreatePolygon)
+            .CacheOutput()
+            .WithTags("polygon")
+            .Produces(400);
+
+        app.MediateGet<GetPolygonByIdRequest, GetPolygonByIdResponse>(ApiRoutes.Polygons.GetPolygonById)
+            .CacheOutput()
+            .WithTags("polygon")
+            .Produces(400);
+
+        app.MediateDelete<DeletePolygonRequest>(ApiRoutes.Polygons.DeletePolygon)
+            .CacheOutput()
+            .WithTags("polygon");
+
+        app.MediatePut<UpdateCabinetRequest, UpdateCabinetResponse>(ApiRoutes.Polygons.UpdatePolygon)
+            .CacheOutput()
+            .WithTags("polygon");
     }
 
     #endregion Local Functions
