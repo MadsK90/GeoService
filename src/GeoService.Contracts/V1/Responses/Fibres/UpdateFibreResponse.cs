@@ -2,6 +2,7 @@
 
 public sealed class UpdateFibreResponse
 {
+    public Guid Id { get; set; }
     public bool Air { get; set; }
 
     public int Size { get; set; }

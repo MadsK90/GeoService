@@ -8,3 +8,6 @@ global using System.Net.Http.Json;
 global using System.Net;
 global using FluentValidation.Results;
 global using System.Text.RegularExpressions;
+global using GeoService.Contracts.Data;
+global using GeoService.Contracts.V1.Requests.Fibres;
+global using GeoService.Contracts.V1.Responses.Fibres;

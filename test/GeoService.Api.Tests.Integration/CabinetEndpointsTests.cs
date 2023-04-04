@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
-
-namespace GeoService.Api.Tests.Integration;
+﻿namespace GeoService.Api.Tests.Integration;
 
 public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
@@ -40,7 +37,7 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
     }
 
     [Fact]
-    public async Task CreateCabinet_Return400_And_ValidationErrors_WhenValidationFailes()
+    public async Task CreateCabinet_Return400_And_ValidationErrors_WhenDataIsIncorrect()
     {
         //Arrange
         var httpClient = _factory.CreateClient();
@@ -82,7 +79,6 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
         var response = await result.Content.ReadFromJsonAsync<GetCabinetByIdResponse>();
 
         //Assert
-
         result.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
@@ -107,7 +103,7 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
     }
 
     [Fact]
-    public async Task GetCabinetById_Return400_And_ValidationErrors_WhenValidationFails()
+    public async Task GetCabinetById_Return400_And_ValidationErrors_WhenDataIsIncorrect()
     {
         //Arrange
         var httpClient = _factory.CreateClient();
@@ -187,11 +183,12 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
 
         updateResponse.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(3);
+            .And
+            .HaveCount(3);
     }
 
     [Fact]
-    public async Task UpdateCabinet_Return404_WhenDoesntExists()
+    public async Task UpdateCabinet_Return404_WhenNotFound()
     {
         //Arrange
         var httpClient = _factory.CreateClient();
@@ -234,7 +231,7 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
     }
 
     [Fact]
-    public async Task DeleteCabinet_Return404_WhenDoesntExist()
+    public async Task DeleteCabinet_Return404_WhenNotFound()
     {
         //Arrange
         var httpClient = _factory.CreateClient();
