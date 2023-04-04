@@ -1,3 +1,6 @@
+using GeoService.Contracts.V1.Requests.Manholes;
+using GeoService.Contracts.V1.Responses.Manholes;
+
 var app = CreateApplication(args);
 //app.UseOutputCache();
 AddEndpoints(app);
@@ -44,6 +47,7 @@ static void AddEndpoints(WebApplication app)
 {
     AddCabinetEndpoints(app);
     AddFibreEndpoints(app);
+    AddManholeEnpoints(app);
 
     #region Local Functions
 
@@ -87,6 +91,27 @@ static void AddEndpoints(WebApplication app)
         app.MediatePut<UpdateFibreRequest, UpdateFibreResponse>(ApiRoutes.Fibres.UpdateFibre)
             .CacheOutput()
             .WithTags("fibre");
+    }
+
+    static void AddManholeEnpoints(WebApplication app)
+    {
+        app.MediatePost<CreateManholeRequest, CreateManholeResponse>(ApiRoutes.Manholes.CreateManhole)
+            .CacheOutput()
+            .WithTags("manhole")
+            .Produces(400);
+
+        app.MediateGet<GetManholeByIdRequest, GetManholeByIdResponse>(ApiRoutes.Manholes.GetManholeById)
+            .CacheOutput()
+            .WithTags("manhole")
+            .Produces(400);
+
+        app.MediateDelete<DeleteFibreRequest>(ApiRoutes.Manholes.DeleteManhole)
+            .CacheOutput()
+            .WithTags("manhole");
+
+        app.MediatePut<UpdateManholeRequest, UpdateManholeResponse>(ApiRoutes.Manholes.UpdateManhole)
+            .CacheOutput()
+            .WithTags("manhole");
     }
 
     #endregion Local Functions

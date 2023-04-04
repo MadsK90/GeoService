@@ -14,3 +14,5 @@ global using GeoService.Contracts.V1.Responses.Cabinets;
 global using GeoService.Contracts.V1.Requests.Cabinets;
 global using GeoService.Contracts.V1.Requests.Fibres;
 global using GeoService.Contracts.V1.Responses.Fibres;
+global using GeoService.Contracts.V1.Requests.Manholes;
+global using GeoService.Contracts.V1.Responses.Manholes;

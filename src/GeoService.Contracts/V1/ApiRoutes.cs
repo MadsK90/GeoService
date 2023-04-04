@@ -21,4 +21,12 @@ public static class ApiRoutes
         public const string DeleteFibre = $"{Base}/fibres/{{id}}";
         public const string UpdateFibre = $"{Base}/fibres";
     }
+
+    public static class Manholes
+    {
+        public const string GetManholeById = $"{Base}/manholes/{{id}}";
+        public const string CreateManhole = $"{Base}/manholes";
+        public const string DeleteManhole = $"{Base}/manholes/{{id}}";
+        public const string UpdateManhole = $"{Base}/manholes";
+    }
 }
