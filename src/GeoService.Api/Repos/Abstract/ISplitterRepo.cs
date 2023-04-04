@@ -10,7 +10,5 @@ public interface ISplitterRepo
 
     Task<bool> DeleteSplitter(Guid splitterId);
 
-    Task<IEnumerable<Splitter>> GetAllSplitters();
-
     Task<Splitter?> GetSplitterById(Guid splitterId);
 }

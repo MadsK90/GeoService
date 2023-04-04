@@ -57,11 +57,6 @@ public sealed class SplitterRepo : ISplitterRepo
         return await SaveChanges();
     }
 
-    public async Task<IEnumerable<Splitter>> GetAllSplitters()
-    {
-        return await _context.Splitters.ToArrayAsync();
-    }
-
     public async Task<Splitter?> GetSplitterById(Guid splitterId)
     {
         return await _context.Splitters.FirstOrDefaultAsync(x => x.Id == splitterId);
@@ -69,6 +64,9 @@ public sealed class SplitterRepo : ISplitterRepo
 
     public async Task<bool> UpdateSplitter(Splitter splitter)
     {
+        if (!await _context.Splitters.AnyAsync(x => x.Id == splitter.Id))
+            return false;
+
         _context.Splitters.Update(splitter);
 
         return await SaveChanges();

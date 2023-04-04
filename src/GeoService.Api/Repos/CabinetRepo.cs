@@ -57,11 +57,6 @@ public sealed class CabinetRepo : ICabinetRepo
         return await SaveChanges();
     }
 
-    public async Task<IEnumerable<Cabinet>> GetAllCabinets()
-    {
-        return await _context.Cabinets.ToArrayAsync();
-    }
-
     public async Task<Cabinet?> GetCabinetById(Guid cabinetId)
     {
         return await _context.Cabinets.FirstOrDefaultAsync(x => x.Id == cabinetId);

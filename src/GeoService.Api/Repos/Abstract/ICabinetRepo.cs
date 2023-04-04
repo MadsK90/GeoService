@@ -10,7 +10,5 @@ public interface ICabinetRepo
 
     Task<bool> DeleteCabinet(Guid cabinetId);
 
-    Task<IEnumerable<Cabinet>> GetAllCabinets();
-
     Task<Cabinet?> GetCabinetById(Guid cabinetId);
 }

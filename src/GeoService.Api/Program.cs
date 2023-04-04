@@ -42,11 +42,12 @@ static WebApplication CreateApplication(params string[] args)
 
 static void AddEndpoints(WebApplication app)
 {
-    AddCabinetEndPoints(app);
+    AddCabinetEndpoints(app);
+    AddFibreEndpoints(app);
 
     #region Local Functions
 
-    static void AddCabinetEndPoints(WebApplication app)
+    static void AddCabinetEndpoints(WebApplication app)
     {
         app.MediatePost<CreateCabinetRequest, CreateCabinetResponse>(ApiRoutes.Cabinets.CreateCabinet)
             .CacheOutput()
@@ -65,6 +66,27 @@ static void AddEndpoints(WebApplication app)
         app.MediatePut<UpdateCabinetRequest, UpdateCabinetResponse>(ApiRoutes.Cabinets.UpdateCabinet)
             .CacheOutput()
             .WithTags("cabinet");
+    }
+
+    static void AddFibreEndpoints(WebApplication app)
+    {
+        app.MediatePost<CreateFibreRequest, CreateFibreResponse>(ApiRoutes.Fibres.CreateFibre)
+            .CacheOutput()
+            .WithTags("fibre")
+            .Produces(400);
+
+        app.MediateGet<GetFibreByIdRequest, GetCabinetByIdResponse>(ApiRoutes.Fibres.GetFibreById)
+            .CacheOutput()
+            .WithTags("fibre")
+            .Produces(400);
+
+        app.MediateDelete<DeleteFibreRequest>(ApiRoutes.Fibres.DeleteFibre)
+            .CacheOutput()
+            .WithTags("fibre");
+
+        app.MediatePut<UpdateFibreRequest, UpdateFibreResponse>(ApiRoutes.Fibres.UpdateFibre)
+            .CacheOutput()
+            .WithTags("fibre");
     }
 
     #endregion Local Functions

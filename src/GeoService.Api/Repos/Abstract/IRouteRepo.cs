@@ -12,7 +12,5 @@ public interface IRouteRepo
 
     Task<bool> DeleteRoute(Guid routeId);
 
-    Task<IEnumerable<Route>> GetAllRoutes();
-
     Task<Route?> GetRouteById(Guid routeId);
 }

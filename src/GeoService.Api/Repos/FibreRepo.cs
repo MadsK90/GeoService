@@ -57,11 +57,6 @@ public sealed class FibreRepo : IFibreRepo
         return await SaveChanges();
     }
 
-    public async Task<IEnumerable<Fibre>> GetAllFibres()
-    {
-        return await _context.Fibres.ToArrayAsync();
-    }
-
     public async Task<Fibre?> GetFibreById(Guid fibreId)
     {
         return await _context.Fibres
@@ -71,6 +66,9 @@ public sealed class FibreRepo : IFibreRepo
 
     public async Task<bool> UpdateFibre(Fibre fibre)
     {
+        if (!await _context.Fibres.AnyAsync(x => x.Id == fibre.Id))
+            return false;
+
         _context.Fibres.Update(fibre);
 
         return await SaveChanges();

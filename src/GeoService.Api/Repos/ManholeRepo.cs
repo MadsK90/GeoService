@@ -57,11 +57,6 @@ public sealed class ManholeRepo : IManholeRepo
         return await SaveChanges();
     }
 
-    public async Task<IEnumerable<Manhole>> GetAllManholes()
-    {
-        return await _context.Manholes.ToArrayAsync();
-    }
-
     public async Task<Manhole?> GetManholeById(Guid manholeId)
     {
         return await _context.Manholes.FirstOrDefaultAsync(x => x.Id == manholeId);
@@ -69,6 +64,9 @@ public sealed class ManholeRepo : IManholeRepo
 
     public async Task<bool> UpdateManhole(Manhole manhole)
     {
+        if (!await _context.Manholes.AnyAsync(x => x.Id == manhole.Id))
+            return false;
+
         _context.Manholes.Update(manhole);
 
         return await SaveChanges();

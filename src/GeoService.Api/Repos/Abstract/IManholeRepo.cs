@@ -10,7 +10,5 @@ public interface IManholeRepo
 
     Task<bool> DeleteManhole(Guid manholeId);
 
-    Task<IEnumerable<Manhole>> GetAllManholes();
-
     Task<Manhole?> GetManholeById(Guid manholeId);
 }

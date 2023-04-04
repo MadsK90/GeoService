@@ -3,12 +3,12 @@
 internal sealed class CreateCabinetHandler : IRequestHandler<CreateCabinetRequest, IResult>
 {
     private readonly IValidator<CreateCabinetRequest> _validator;
-    private readonly ICabinetRepo _cabinetRepo;
+    private readonly ICabinetRepo _repo;
 
     public CreateCabinetHandler(IValidator<CreateCabinetRequest> validator, ICabinetRepo cabinetRepo)
     {
         _validator = validator;
-        _cabinetRepo = cabinetRepo;
+        _repo = cabinetRepo;
     }
 
     public async Task<IResult> Handle(CreateCabinetRequest request, CancellationToken cancellationToken)
@@ -21,7 +21,7 @@ internal sealed class CreateCabinetHandler : IRequestHandler<CreateCabinetReques
         if (cabinet == null)
             return Results.BadRequest();
 
-        var id = await _cabinetRepo.CreateCabinet(cabinet);
+        var id = await _repo.CreateCabinet(cabinet);
         if (id == null)
             return Results.BadRequest();
 

@@ -10,7 +10,5 @@ public interface IFibreRepo
 
     Task<bool> DeleteFibre(Guid fibreId);
 
-    Task<IEnumerable<Fibre>> GetAllFibres();
-
     Task<Fibre?> GetFibreById(Guid fibreId);
 }

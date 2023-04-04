@@ -59,11 +59,6 @@ public sealed class RouteRepo : IRouteRepo
         return await SaveChanges();
     }
 
-    public async Task<IEnumerable<Route>> GetAllRoutes()
-    {
-        return await _context.Routes.ToArrayAsync();
-    }
-
     public async Task<Route?> GetRouteById(Guid routeId)
     {
         return await _context.Routes
@@ -73,6 +68,9 @@ public sealed class RouteRepo : IRouteRepo
 
     public async Task<bool> UpdateRoute(Route route)
     {
+        if (!await _context.Routes.AnyAsync(x => x.Id == route.Id))
+            return false;
+
         _context.Routes.Update(route);
 
         return await SaveChanges();
