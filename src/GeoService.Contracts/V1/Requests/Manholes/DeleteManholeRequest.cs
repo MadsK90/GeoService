@@ -2,5 +2,5 @@
 
 public class DeleteManholeRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

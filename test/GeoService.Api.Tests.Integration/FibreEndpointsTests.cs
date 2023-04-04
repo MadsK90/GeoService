@@ -2,8 +2,12 @@
 
 public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
+    #region Fields
+
     private readonly WebApplicationFactory<IApiMarker> _factory;
     private readonly List<Guid> _createdFibres = new();
+
+    #endregion Fields
 
     public FibreEndpointsTests(WebApplicationFactory<IApiMarker> factory)
     {

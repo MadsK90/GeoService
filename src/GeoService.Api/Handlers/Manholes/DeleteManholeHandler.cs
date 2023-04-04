@@ -17,6 +17,9 @@ internal sealed class DeleteManholeHandler : IRequestHandler<DeleteManholeReques
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        if (!await _repo.DeleteManhole(request.Id))
+            return Results.NotFound();
+
+        return Results.NoContent();
     }
 }

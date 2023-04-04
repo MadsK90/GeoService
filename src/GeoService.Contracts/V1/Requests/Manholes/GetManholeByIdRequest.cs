@@ -2,5 +2,5 @@
 
 public class GetManholeByIdRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

@@ -2,5 +2,5 @@
 
 public sealed class CreateManholeResponse
 {
-    
+    public Guid Id { get; set; }
 }

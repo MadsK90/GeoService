@@ -105,7 +105,7 @@ static void AddEndpoints(WebApplication app)
             .WithTags("manhole")
             .Produces(400);
 
-        app.MediateDelete<DeleteFibreRequest>(ApiRoutes.Manholes.DeleteManhole)
+        app.MediateDelete<DeleteManholeRequest>(ApiRoutes.Manholes.DeleteManhole)
             .CacheOutput()
             .WithTags("manhole");
 

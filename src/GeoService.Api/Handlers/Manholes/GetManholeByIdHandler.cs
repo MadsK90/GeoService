@@ -17,6 +17,10 @@ internal sealed class GetManholeByIdHandler : IRequestHandler<GetManholeByIdRequ
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        var manhole = await _repo.GetManholeById(request.Id);
+        if (manhole == null)
+            return Results.NotFound();
+
+        return Results.Ok(manhole.Adapt<GetManholeByIdResponse>());
     }
 }

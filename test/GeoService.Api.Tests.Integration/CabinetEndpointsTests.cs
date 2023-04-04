@@ -2,8 +2,12 @@
 
 public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
+    #region Fields
+
     private readonly WebApplicationFactory<IApiMarker> _factory;
     private readonly List<Guid> _createdCabinets = new();
+
+    #endregion Fields
 
     public CabinetEndpointsTests(WebApplicationFactory<IApiMarker> factory)
     {
@@ -56,7 +60,8 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(3);
+            .And
+            .HaveCount(3);
     }
 
     #endregion Add
@@ -199,7 +204,7 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
             Id = Guid.NewGuid(),
             Name = "ABC",
             Latitude = 40,
-            Longitude = 40
+            Longitude = 50
         };
 
         var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Cabinets.UpdateCabinet, updateCabinetRequest);

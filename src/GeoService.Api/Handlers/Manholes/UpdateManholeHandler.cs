@@ -17,6 +17,13 @@ internal sealed class UpdateManholeHandler : IRequestHandler<UpdateManholeReques
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        var manhole = request.Adapt<Manhole>();
+        if (manhole == null)
+            return Results.BadRequest();
+
+        if (!await _repo.UpdateManhole(manhole))
+            return Results.NotFound();
+
+        return Results.Ok(manhole.Adapt<UpdateManholeResponse>());
     }
 }
