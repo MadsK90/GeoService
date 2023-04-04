@@ -58,11 +58,6 @@ static void AddEndpoints(WebApplication app)
             .WithTags("cabinet")
             .Produces(400);
 
-        app.MediateGet<GetAllCabinetsRequest, GetAllCabinetsResponse>(ApiRoutes.Cabinets.GetAllCabinets)
-            .CacheOutput()
-            .WithTags("cabinet")
-            .Produces(400);
-
         app.MediateDelete<DeleteCabinetRequest>(ApiRoutes.Cabinets.DeleteCabinet)
             .CacheOutput()
             .WithTags("cabinet");
