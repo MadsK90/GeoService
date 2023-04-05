@@ -73,6 +73,68 @@ public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFa
 
     #endregion Add
 
+    #region Get
+
+    [Fact]
+    public async Task GetRouteById_ReturnRoute_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = GenerateCreateRouteRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
+
+        _createdRoutes.Add(createResponse.Id);
+
+        //Act
+        var result = await httpClient.GetAsync(GetRouteByIdRoute(createResponse.Id));
+        var response = await result.Content.ReadFromJsonAsync<GetRouteByIdResponse>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        response.Should()
+            .NotBeNull()
+            .And.BeEquivalentTo(createRouteRequest);
+    }
+
+    [Fact]
+    public async Task GetRouteById_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetRouteByIdRoute(Guid.NewGuid()));
+
+        //Assert
+
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetRouteById_Return400_And_Validation_Errors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetRouteByIdRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And.HaveCount(1);
+    }
+
+    #endregion Get
+
     #region Helpers
 
     private static string GetRouteByIdRoute(Guid id)

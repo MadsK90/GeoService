@@ -17,6 +17,10 @@ internal sealed class GetRouteByIdHandler : IRequestHandler<GetRouteByIdRequest,
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        var route = await _repo.GetRouteById(request.Id);
+        if (route == null)
+            return Results.NotFound();
+
+        return Results.Ok(route.Adapt<GetRouteByIdResponse>());
     }
 }
