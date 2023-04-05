@@ -189,9 +189,6 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
     [Fact]
     public async Task UpdateCabinet_Return404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
         var updateCabinetRequest = new UpdateCabinetRequest
         {

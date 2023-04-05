@@ -33,4 +33,20 @@ public interface IGeoServiceApi
     Task<ApiResponse<IResult>> DeleteFibreAsync(DeleteFibreRequest request);
 
     #endregion Fibres
+
+    #region Manholes
+
+    [Post(ApiRoutes.Manholes.CreateManhole)]
+    Task<ApiResponse<CreateManholeResponse>> CreateManholeAsync(CreateManholeRequest request);
+
+    [GetWithReplaceId(ApiRoutes.Manholes.GetManholeById)]
+    Task<ApiResponse<GetManholeByIdResponse>> GetManholeByIdAsync(GetManholeByIdRequest request);
+
+    [Put(ApiRoutes.Manholes.UpdateManhole)]
+    Task<ApiResponse<UpdateManholeResponse>> UpdateManholeAsync(UpdateManholeRequest request);
+
+    [DeleteWithReplaceId(ApiRoutes.Manholes.DeleteManhole)]
+    Task<ApiResponse<IResult>> DeleteManholeAsync(DeleteManholeRequest request);
+
+    #endregion Manholes
 }
