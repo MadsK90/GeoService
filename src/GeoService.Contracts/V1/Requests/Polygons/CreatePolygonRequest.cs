@@ -2,5 +2,5 @@
 
 public class CreatePolygonRequest : IHttpRequest
 {
-	
+    public IEnumerable<PointDoubleDto> Points { get; set; } = default!;
 }

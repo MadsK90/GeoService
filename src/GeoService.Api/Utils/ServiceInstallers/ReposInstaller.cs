@@ -9,5 +9,6 @@ public sealed class ReposInstaller : IServiceInstaller
         services.AddScoped<IRouteRepo, RouteRepo>();
         services.AddScoped<ISplitterRepo, SplitterRepo>();
         services.AddScoped<IManholeRepo, ManholeRepo>();
+        services.AddScoped<IPolygonRepo, PolygonRepo>();
     }
 }

@@ -2,5 +2,5 @@
 
 public class DeletePolygonRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

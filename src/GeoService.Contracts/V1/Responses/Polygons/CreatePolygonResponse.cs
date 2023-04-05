@@ -2,5 +2,5 @@
 
 public sealed class CreatePolygonResponse
 {
-    
+    public Guid Id { get; set; }
 }

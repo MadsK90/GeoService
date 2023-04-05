@@ -2,5 +2,5 @@
 
 public class GetPolygonByIdRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

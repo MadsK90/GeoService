@@ -2,5 +2,7 @@
 
 public sealed class GetPolygonByIdResponse
 {
-    
+    public Guid Id { get; set; }
+
+    public IEnumerable<PointDoubleDto> Points { get; set; } = default!;
 }

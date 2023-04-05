@@ -59,7 +59,8 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(2);
+            .And
+            .HaveCount(2);
     }
 
     #endregion Add

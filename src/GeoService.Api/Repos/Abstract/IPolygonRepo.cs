@@ -10,5 +10,5 @@ public interface IPolygonRepo
 
     Task<bool> DeletePolygon(Guid polygonId);
 
-    Task<Manhole?> GetPolygonById(Guid polygonId);
+    Task<Polygon?> GetPolygonById(Guid polygonId);
 }

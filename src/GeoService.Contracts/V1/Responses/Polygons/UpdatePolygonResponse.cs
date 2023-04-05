@@ -2,4 +2,7 @@
 
 public sealed class UpdatePolygonResponse
 {
+    public Guid Id { get; set; }
+
+    public IEnumerable<PointDoubleDto> Points { get; set; } = default!;
 }

@@ -17,6 +17,14 @@ internal sealed class CreatePolygonHandler : IRequestHandler<CreatePolygonReques
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        var polygon = request.Adapt<Polygon>();
+        if (polygon == null)
+            return Results.BadRequest();
+
+        var id = await _repo.CreatePolygon(polygon);
+        if (id == null)
+            return Results.BadRequest();
+
+        return Results.Ok(new CreatePolygonResponse { Id = id.Value });
     }
 }
