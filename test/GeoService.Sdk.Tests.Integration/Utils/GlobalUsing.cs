@@ -1,1 +1,12 @@
 ﻿global using Xunit;
+global using Refit;
+global using System.Net;
+global using GeoService.Api;
+global using FluentAssertions;
+global using FluentValidation.Results;
+global using System.Net.Http.Json;
+global using System.Text.RegularExpressions;
+global using Microsoft.AspNetCore.Mvc.Testing;
+global using GeoService.Contracts.V1;
+global using GeoService.Contracts.V1.Requests.Cabinets;
+global using GeoService.Contracts.V1.Responses.Cabinets;
