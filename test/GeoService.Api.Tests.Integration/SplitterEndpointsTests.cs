@@ -76,7 +76,6 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
         var createSplitterRequest = GenerateCreateSplitterRequest();
         var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
         var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
-
         _createdSplitters.Add(createResponse.Id);
 
         //Act
@@ -129,6 +128,93 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
     }
 
     #endregion Get
+
+    #region Update
+
+    [Fact]
+    public async Task UpdateSplitter_UpdatesSplitter_WhenDataIsCorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createSplitterRequest = GenerateCreateSplitterRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
+        _createdSplitters.Add(createResponse.Id);
+
+        //Act
+        var updateSplitterRequest = new UpdateSplitterRequest
+        {
+            Id = createResponse.Id,
+            Latitude = 20,
+            Longitude = 30,
+            Name = "XYZ"
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdateSplitterResponse>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+        updateResponse.Should()
+            .BeEquivalentTo(updateSplitterRequest);
+    }
+
+    [Fact]
+    public async Task UpdateSplitter_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createSplitterRequest = GenerateCreateSplitterRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
+        _createdSplitters.Add(createResponse.Id);
+
+        //Act
+        var updateSplitterRequest = new UpdateSplitterRequest
+        {
+            Id = createResponse.Id,
+            Latitude = 200,
+            Longitude = 200,
+            Name = "AB"
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        updateResponse.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(3);
+    }
+
+    [Fact]
+    public async Task UpdateSplitter_Retur404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var updateSplitterRequest = new UpdateSplitterResponse
+        {
+            Id = Guid.NewGuid(),
+            Name = "ABC",
+            Latitude = 40,
+            Longitude = 50
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    #endregion Update
 
     #region Helpers
 

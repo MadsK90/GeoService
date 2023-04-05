@@ -17,6 +17,13 @@ internal sealed class UpdateSplitterHandler : IRequestHandler<UpdateSplitterRequ
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        var splitter = request.Adapt<Splitter>();
+        if (splitter == null)
+            return Results.BadRequest();
+
+        if (!await _repo.UpdateSplitter(splitter))
+            return Results.NotFound();
+
+        return Results.Ok(splitter.Adapt<UpdateSplitterResponse>());
     }
 }
