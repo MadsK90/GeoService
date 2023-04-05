@@ -3,10 +3,12 @@
 internal sealed class DeleteRouteHandler : IRequestHandler<DeleteRouteRequest, IResult>
 {
     private readonly IValidator<DeleteRouteRequest> _validator;
+    private readonly IRouteRepo _repo;
 
-    public DeleteRouteHandler(IValidator<DeleteRouteRequest> validator)
+    public DeleteRouteHandler(IValidator<DeleteRouteRequest> validator, IRouteRepo repo)
     {
         _validator = validator;
+        _repo = repo;
     }
 
     public async Task<IResult> Handle(DeleteRouteRequest request, CancellationToken cancellationToken)

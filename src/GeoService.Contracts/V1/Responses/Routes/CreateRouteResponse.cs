@@ -2,5 +2,5 @@
 
 public sealed class CreateRouteResponse
 {
-    
+    public Guid Id { get; set; }
 }

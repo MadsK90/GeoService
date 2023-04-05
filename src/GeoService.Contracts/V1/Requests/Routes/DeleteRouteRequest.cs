@@ -2,5 +2,5 @@
 
 public class DeleteRouteRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

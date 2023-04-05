@@ -1,0 +1,132 @@
+﻿namespace GeoService.Api.Tests.Integration;
+
+public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
+{
+    #region Fields
+
+    private readonly WebApplicationFactory<IApiMarker> _factory;
+    private readonly List<Guid> _createdRoutes = new();
+
+    #endregion Fields
+
+    public RouteEndpointsTests(WebApplicationFactory<IApiMarker> factory)
+    {
+        _factory = factory;
+    }
+
+    #region Add
+
+    [Fact]
+    public async Task CreateRoute_CreatesRoute_WhenDataIsCorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = GenerateCreateRouteRequest();
+
+        //Act
+        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var response = await result.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
+
+        _createdRoutes.Add(response.Id);
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        response.Should()
+            .NotBeNull();
+
+        response!.Id.Should()
+            .NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task CreateRoute_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = new CreateRouteRequest
+        {
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 200,
+                    Longitude = 200
+                }
+            }
+        };
+
+        //Act
+        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>() ?? throw new Exception("");
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(3);
+    }
+
+    #endregion Add
+
+    #region Helpers
+
+    private static string GetRouteByIdRoute(Guid id)
+    {
+        return ReplaceIdRegex().Replace(ApiRoutes.Routes.GetRouteById, id.ToString());
+    }
+
+    private static string DeleteRouteRoute(Guid id)
+    {
+        return ReplaceIdRegex().Replace(ApiRoutes.Routes.DeleteRoute, id.ToString());
+    }
+
+    [GeneratedRegex("{id}")]
+    private static partial Regex ReplaceIdRegex();
+
+    #endregion Helpers
+
+    #region Setup & Teardown
+
+    private static CreateRouteRequest GenerateCreateRouteRequest()
+    {
+        return new CreateRouteRequest
+        {
+            Type = RouteType.Kundegraving,
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 4,
+                    Longitude = 5
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 6,
+                    Longitude = 7
+                }
+            }
+        };
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        if (!_createdRoutes.Any())
+            return;
+
+        var httpClient = _factory.CreateClient();
+
+        foreach (var routeId in _createdRoutes)
+        {
+            await httpClient.DeleteAsync(DeleteRouteRoute(routeId));
+        }
+    }
+
+    #endregion Setup & Teardown
+}

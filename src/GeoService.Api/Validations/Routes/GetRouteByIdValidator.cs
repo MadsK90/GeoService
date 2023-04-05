@@ -4,5 +4,7 @@ public sealed class GetRouteByIdValidator : AbstractValidator<GetRouteByIdReques
 {
     public GetRouteByIdValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
     }
 }

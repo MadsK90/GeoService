@@ -10,4 +10,8 @@
     <PackageReference Include="Snorlax.Web" Version="0.1.20" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GeoService.Definitions\GeoService.Definitions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,5 +2,9 @@
 
 public class UpdateRouteRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
+
+    public RouteType Type { get; set; }
+
+    public IEnumerable<PointDoubleDto> Points { get; set; } = default!;
 }

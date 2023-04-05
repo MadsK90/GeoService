@@ -2,5 +2,5 @@
 
 public class GetRouteByIdRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

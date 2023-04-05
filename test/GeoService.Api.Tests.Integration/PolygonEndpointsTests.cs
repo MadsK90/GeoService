@@ -41,7 +41,7 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
     }
 
     [Fact]
-    public async Task CreatePolygon_Return400_AndValidationerrors_WhenDataIsIncorrect()
+    public async Task CreatePolygon_Return400_And_Validationerrors_WhenDataIsIncorrect()
     {
         //Arrange
         var httpClient = _factory.CreateClient();

@@ -2,5 +2,7 @@
 
 public class CreateRouteRequest : IHttpRequest
 {
-	
+    public RouteType Type { get; set; }
+
+    public IEnumerable<PointDoubleDto> Points { get; set; } = default!;
 }
