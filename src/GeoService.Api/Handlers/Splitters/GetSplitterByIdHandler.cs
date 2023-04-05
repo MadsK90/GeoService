@@ -17,6 +17,10 @@ internal sealed class GetSplitterByIdHandler : IRequestHandler<GetSplitterByIdRe
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        var splitter = await _repo.GetSplitterById(request.Id);
+        if (splitter == null)
+            return Results.NotFound();
+
+        return Results.Ok(splitter.Adapt<GetSplitterByIdResponse>());
     }
 }

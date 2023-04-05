@@ -66,6 +66,70 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
 
     #endregion Add
 
+    #region Get
+
+    [Fact]
+    public async Task GetSplitterById_ReturnSplitter_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createSplitterRequest = GenerateCreateSplitterRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
+
+        _createdSplitters.Add(createResponse.Id);
+
+        //Act
+        var result = await httpClient.GetAsync(GetSplitterByIdRoute(createResponse.Id));
+        var response = await result.Content.ReadFromJsonAsync<GetSplitterByIdResponse>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        response.Should()
+            .NotBeNull()
+            .And
+            .BeEquivalentTo(createSplitterRequest);
+    }
+
+    [Fact]
+    public async Task GetSplitterById_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetSplitterByIdRoute(Guid.NewGuid()));
+
+        //Assert
+
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetSplitterById_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetSplitterByIdRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(1);
+    }
+
+    #endregion Get
+
     #region Helpers
 
     private static string GetSplitterByIdRoute(Guid id)
