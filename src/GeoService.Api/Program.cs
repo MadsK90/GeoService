@@ -1,6 +1,3 @@
-using GeoService.Contracts.V1.Requests.Manholes;
-using GeoService.Contracts.V1.Responses.Manholes;
-
 var app = CreateApplication(args);
 //app.UseOutputCache();
 AddEndpoints(app);
@@ -49,6 +46,7 @@ static void AddEndpoints(WebApplication app)
     AddFibreEndpoints(app);
     AddManholeEndpoints(app);
     AddPolygonEndpoints(app);
+    AddRouteEndpoints(app);
 
     #region Local Functions
 
@@ -134,6 +132,27 @@ static void AddEndpoints(WebApplication app)
         app.MediatePut<UpdatePolygonRequest, UpdatePolygonResponse>(ApiRoutes.Polygons.UpdatePolygon)
             .CacheOutput()
             .WithTags("polygon");
+    }
+
+    static void AddRouteEndpoints(WebApplication app)
+    {
+        app.MediatePost<CreateRouteRequest, CreateRouteResponse>(ApiRoutes.Routes.CreateRoute)
+            .CacheOutput()
+            .WithTags("route")
+            .Produces(400);
+
+        app.MediateGet<GetRouteByIdRequest, GetRouteByIdResponse>(ApiRoutes.Routes.GetRouteById)
+            .CacheOutput()
+            .WithTags("route")
+            .Produces(400);
+
+        app.MediateDelete<DeleteRouteRequest>(ApiRoutes.Routes.DeleteRoute)
+            .CacheOutput()
+            .WithTags("route");
+
+        app.MediatePut<UpdateRouteRequest, UpdateRouteResponse>(ApiRoutes.Routes.UpdateRoute)
+            .CacheOutput()
+            .WithTags("route");
     }
 
     #endregion Local Functions

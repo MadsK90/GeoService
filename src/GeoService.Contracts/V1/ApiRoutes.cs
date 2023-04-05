@@ -37,4 +37,12 @@ public static class ApiRoutes
         public const string DeletePolygon = $"{Base}/polygons/{{id}}";
         public const string UpdatePolygon = $"{Base}/polygons";
     }
+
+    public static class Routes
+    {
+        public const string GetRouteById = $"{Base}/routes/{{id}}";
+        public const string CreateRoute = $"{Base}/routes";
+        public const string DeleteRoute = $"{Base}/routes/{{id}}";
+        public const string UpdateRoute = $"{Base}/routes";
+    }
 }

@@ -18,3 +18,5 @@ global using GeoService.Contracts.V1.Requests.Manholes;
 global using GeoService.Contracts.V1.Responses.Manholes;
 global using GeoService.Contracts.V1.Requests.Polygons;
 global using GeoService.Contracts.V1.Responses.Polygons;
+global using GeoService.Contracts.V1.Requests.Routes;
+global using GeoService.Contracts.V1.Responses.Routes;
