@@ -216,6 +216,61 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
 
     #endregion Update
 
+    #region Delete
+
+    [Fact]
+    public async Task DeleteSplitter_Return200_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createSplitterRequest = GenerateCreateSplitterRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(createResponse.Id));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task DeleteSplitter_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(Guid.NewGuid()));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task DeleteSplitter_Return400_WhenIdEmpty()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(1);
+    }
+
+    #endregion Delete
+
     #region Helpers
 
     private static string GetSplitterByIdRoute(Guid id)

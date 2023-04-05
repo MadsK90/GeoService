@@ -17,6 +17,9 @@ internal sealed class DeleteSplitterHandler : IRequestHandler<DeleteSplitterRequ
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        if (!await _repo.DeleteSplitter(request.Id))
+            return Results.NotFound();
+
+        return Results.NoContent();
     }
 }
