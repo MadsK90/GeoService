@@ -101,7 +101,8 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNull()
-            .And.BeEquivalentTo(createPolygonRequest);
+            .And
+            .BeEquivalentTo(createPolygonRequest);
     }
 
     [Fact]
@@ -239,10 +240,6 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
     {
         //Arrange
         var httpClient = _factory.CreateClient();
-        var createPolygonRequest = GenerateCreatePolygonRequest();
-        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
-        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
-        _createdPolygons.Add(createResponse.Id);
 
         //Act
         var updatePolygonRequest = new UpdatePolygonRequest

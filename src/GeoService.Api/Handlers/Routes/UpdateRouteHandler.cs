@@ -1,4 +1,6 @@
-﻿namespace GeoService.Api.Handlers.Routes;
+﻿using Route = GeoService.Database.Models.Route;
+
+namespace GeoService.Api.Handlers.Routes;
 
 internal sealed class UpdateRouteHandler : IRequestHandler<UpdateRouteRequest, IResult>
 {
@@ -17,6 +19,13 @@ internal sealed class UpdateRouteHandler : IRequestHandler<UpdateRouteRequest, I
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        var route = request.Adapt<Route>();
+        if (route == null)
+            return Results.BadRequest();
+
+        if (!await _repo.UpdateRoute(route))
+            return Results.NotFound();
+
+        return Results.Ok(route.Adapt<UpdatePolygonResponse>());
     }
 }

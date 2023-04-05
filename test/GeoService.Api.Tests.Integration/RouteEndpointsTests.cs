@@ -1,4 +1,6 @@
-﻿namespace GeoService.Api.Tests.Integration;
+﻿using GeoService.Contracts.V1.Requests.Polygons;
+
+namespace GeoService.Api.Tests.Integration;
 
 public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
@@ -83,7 +85,6 @@ public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFa
         var createRouteRequest = GenerateCreateRouteRequest();
         var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
         var createResponse = await createResult.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
-
         _createdRoutes.Add(createResponse.Id);
 
         //Act
@@ -96,7 +97,8 @@ public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFa
 
         response.Should()
             .NotBeNull()
-            .And.BeEquivalentTo(createRouteRequest);
+            .And
+            .BeEquivalentTo(createRouteRequest);
     }
 
     [Fact]
@@ -130,10 +132,130 @@ public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFa
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(1);
+            .And
+            .HaveCount(1);
     }
 
     #endregion Get
+
+    #region Update
+
+    [Fact]
+    public async Task UpdateRoute_UpdatesRoute_WhenDataIsCorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = GenerateCreateRouteRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
+        _createdRoutes.Add(createResponse.Id);
+
+        //Act
+        var updateRuteRequest = new UpdateRouteRequest
+        {
+            Id = createResponse.Id,
+            Type = RouteType.Klamring,
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 1,
+                    Longitude = 2
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 3,
+                    Longitude = 4
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 5,
+                    Longitude = 6
+                }
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Routes.UpdateRoute, updateRuteRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdateRouteResponse>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        updateResponse.Should()
+            .BeEquivalentTo(updateRuteRequest);
+    }
+
+    [Fact]
+    public async Task UpdateRoute_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = GenerateCreateRouteRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
+        _createdRoutes.Add(createResponse.Id);
+
+        //Act
+        var updateRuteRequest = new UpdateRouteRequest
+        {
+            Id = createResponse.Id,
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 200,
+                    Longitude = 200
+                },
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Routes.UpdateRoute, updateRuteRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        updateResponse.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(3);
+    }
+
+    [Fact]
+    public async Task UpdateRoute_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var updateRouteRequest = new UpdateRouteRequest
+        {
+            Id = Guid.NewGuid(),
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 1,
+                    Longitude = 2
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 3,
+                    Longitude = 4
+                }
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Routes.UpdateRoute, updateRouteRequest);
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    #endregion Update
 
     #region Helpers
 

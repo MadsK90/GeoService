@@ -89,7 +89,8 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNull()
-            .And.BeEquivalentTo(createCabinetRequest);
+            .And
+            .BeEquivalentTo(createCabinetRequest);
     }
 
     [Fact]
@@ -123,7 +124,8 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(1);
+            .And
+            .HaveCount(1);
     }
 
     #endregion Get

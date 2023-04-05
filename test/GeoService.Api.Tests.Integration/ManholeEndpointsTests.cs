@@ -89,7 +89,8 @@ public sealed partial class ManholeEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNull()
-            .And.BeEquivalentTo(createManholeRequest);
+            .And
+            .BeEquivalentTo(createManholeRequest);
     }
 
     [Fact]
@@ -123,7 +124,8 @@ public sealed partial class ManholeEndpointsTests : IClassFixture<WebApplication
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(1);
+            .And
+            .HaveCount(1);
     }
 
     #endregion Get

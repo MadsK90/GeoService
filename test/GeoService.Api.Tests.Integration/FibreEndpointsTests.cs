@@ -88,7 +88,8 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
         response.Should()
             .NotBeNull()
-            .And.BeEquivalentTo(createFibreRequest);
+            .And
+            .BeEquivalentTo(createFibreRequest);
     }
 
     [Fact]
@@ -122,7 +123,8 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
         response.Should()
             .NotBeNullOrEmpty()
-            .And.HaveCount(1);
+            .And
+            .HaveCount(1);
     }
 
     #endregion Get
