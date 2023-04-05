@@ -1,4 +1,4 @@
-﻿namespace GeoService.Api.Tests.Integration;
+﻿namespace GeoService.Sdk.Tests.Integration;
 
 public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
@@ -6,12 +6,14 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
     private readonly WebApplicationFactory<IApiMarker> _factory;
     private readonly List<Guid> _createdFibres = new();
+    private readonly IGeoServiceApi _sut;
 
     #endregion Fields
 
     public FibreEndpointsTests(WebApplicationFactory<IApiMarker> factory)
     {
         _factory = factory;
+        _sut = RestService.For<IGeoServiceApi>(_factory.CreateClient());
     }
 
     #region Add
@@ -20,23 +22,21 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
     public async Task CreateFibre_CreatesFibre_WhenDataIsCorrect()
     {
         //Arrange
-        var httpClient = _factory.CreateClient();
         var createFibreRequest = GenereateCreateFibreRequest();
 
         //Act
-        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Fibres.CreateFibre, createFibreRequest);
-        var response = await result.Content.ReadFromJsonAsync<CreateFibreResponse>() ?? throw new Exception("");
-
-        _createdFibres.Add(response.Id);
+        var response = await _sut.CreateFibreAsync(createFibreRequest) ?? throw new Exception("");
+        if (response.Content != null)
+            _createdFibres.Add(response.Content.Id);
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        response.Should()
+        response.Content.Should()
             .NotBeNull();
 
-        response!.Id.Should()
+        response.Content!.Id.Should()
             .NotBeEmpty();
     }
 
@@ -44,20 +44,19 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
     public async Task CreateFibre_Return400_And_ValidationErrors_WhenDataIsIncorrect()
     {
         //Arrange
-        var httpClient = _factory.CreateClient();
         var createFibreRequest = GenereateCreateFibreRequest();
         createFibreRequest.Size = -1;
         createFibreRequest.Points = Array.Empty<PointDoubleDto>();
 
         //Act
-        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Fibres.CreateFibre, createFibreRequest);
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>() ?? throw new Exception("");
+        var response = await _sut.CreateFibreAsync(createFibreRequest) ?? throw new Exception("");
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(2);
@@ -79,14 +78,13 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
         _createdFibres.Add(createResponse.Id);
 
         //Act
-        var result = await httpClient.GetAsync(GetFibreByIdRoute(createResponse.Id));
-        var response = await result.Content.ReadFromJsonAsync<GetFibreByIdResponse>();
+        var response = await _sut.GetFibreByIdAsync(new GetFibreByIdRequest { Id = createResponse.Id });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        response.Should()
+        response.Content.Should()
             .NotBeNull()
             .And
             .BeEquivalentTo(createFibreRequest);
@@ -95,33 +93,26 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
     [Fact]
     public async Task GetFibreById_Return404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.GetAsync(GetFibreByIdRoute(Guid.NewGuid()));
+        var response = await _sut.GetFibreByIdAsync(new GetFibreByIdRequest { Id = Guid.NewGuid() });
 
         //Assert
-
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task GetFibreById_Return400_AndValidationErrors_WhenDataIsIncorrect()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.GetAsync(GetFibreByIdRoute(Guid.Empty));
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.GetFibreByIdAsync(new GetFibreByIdRequest { Id = Guid.Empty });
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(1);
@@ -166,15 +157,13 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
                 }
             }
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Fibres.UpdateFibre, updateFibreRequest);
-        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdateFibreResponse>();
+        var response = await _sut.UpdateFibreAsync(updateFibreRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        updateResponse.Should()
+        response.Content.Should()
             .BeEquivalentTo(updateFibreRequest);
     }
 
@@ -204,14 +193,14 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
             }
         };
 
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Fibres.UpdateFibre, updateFibreRequest);
-        var updateResponse = await updateResult.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.UpdateFibreAsync(updateFibreRequest);
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        updateResponse.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(2);
@@ -219,11 +208,7 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
     [Fact]
     public async Task UpdateFibre_Return404_WhenNotFound()
-
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
         var updateFibreRequest = new UpdateFibreRequest
         {
@@ -244,11 +229,10 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
                 }
             }
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Fibres.UpdateFibre, updateFibreRequest);
+        var response = await _sut.UpdateFibreAsync(updateFibreRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
@@ -266,42 +250,36 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
         var createResponse = await createResult.Content.ReadFromJsonAsync<CreateFibreResponse>() ?? throw new Exception("");
 
         //Act
-        var result = await httpClient.DeleteAsync(DeleteFibreRoute(createResponse.Id));
+        var response = await _sut.DeleteFibreAsync(new DeleteFibreRequest { Id = createResponse.Id });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
     public async Task DeleteFibre_Return404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.DeleteAsync(DeleteFibreRoute(Guid.NewGuid()));
+        var response = await _sut.DeleteFibreAsync(new DeleteFibreRequest { Id = Guid.NewGuid() });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task DeleteFibre_Return400_WhenIdEmpty()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.DeleteAsync(DeleteFibreRoute(Guid.Empty));
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.DeleteFibreAsync(new DeleteFibreRequest { Id = Guid.Empty });
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(1);

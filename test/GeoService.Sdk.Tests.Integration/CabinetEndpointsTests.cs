@@ -142,14 +142,14 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
             Longitude = createCabinetRequest.Longitude,
             Name = "ABC"
         };
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Cabinets.UpdateCabinet, updateCabinetRequest);
-        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdateCabinetResponse>();
+
+        var response = await _sut.UpdateCabinetAsync(updateCabinetRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        updateResponse.Should()
+        response.Content.Should()
             .BeEquivalentTo(updateCabinetRequest);
     }
 
@@ -200,11 +200,10 @@ public sealed partial class CabinetEndpointsTests : IClassFixture<WebApplication
             Latitude = 40,
             Longitude = 50
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Cabinets.UpdateCabinet, updateCabinetRequest);
+        var response = await _sut.UpdateCabinetAsync(updateCabinetRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 

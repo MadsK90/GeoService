@@ -18,23 +18,19 @@ public interface IGeoServiceApi
 
     #endregion Cabinets
 
-    /*
-
     #region Fibres
 
     [Post(ApiRoutes.Fibres.CreateFibre)]
     Task<ApiResponse<CreateFibreResponse>> CreateFibreAsync(CreateFibreRequest request);
 
-    [Get(ApiRoutes.Fibres.GetFibreById)]
+    [GetWithReplaceId(ApiRoutes.Fibres.GetFibreById)]
     Task<ApiResponse<GetFibreByIdResponse>> GetFibreByIdAsync(GetFibreByIdRequest request);
 
     [Put(ApiRoutes.Fibres.UpdateFibre)]
     Task<ApiResponse<UpdateFibreResponse>> UpdateFibreAsync(UpdateFibreRequest request);
 
-    [Delete(ApiRoutes.Fibres.DeleteFibre)]
-    Task<IResult> DeleteFibreResponse(DeleteFibreRequest request);
+    [DeleteWithReplaceId(ApiRoutes.Fibres.DeleteFibre)]
+    Task<ApiResponse<IResult>> DeleteFibreAsync(DeleteFibreRequest request);
 
     #endregion Fibres
-
-    */
 }
