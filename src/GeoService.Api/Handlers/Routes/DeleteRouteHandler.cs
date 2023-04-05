@@ -17,6 +17,9 @@ internal sealed class DeleteRouteHandler : IRequestHandler<DeleteRouteRequest, I
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException();
+        if (!await _repo.DeleteRoute(request.Id))
+            return Results.NotFound();
+
+        return Results.NoContent();
     }
 }

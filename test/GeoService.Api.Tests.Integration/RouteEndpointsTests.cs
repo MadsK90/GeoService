@@ -257,6 +257,62 @@ public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFa
 
     #endregion Update
 
+    #region Delete
+
+    [Fact]
+    public async Task DeleteRoute_Return200_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createRouteRequest = GenerateCreateRouteRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Routes.CreateRoute, createRouteRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreateRouteResponse>() ?? throw new Exception("");
+        _createdRoutes.Add(createResponse.Id);
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteRouteRoute(createResponse.Id));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task DeleteRoute_Retur404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteRouteRoute(Guid.NewGuid()));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task DeleteRoute_Return400_WhenIdEmpty()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeleteRouteRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(1);
+    }
+
+    #endregion Delete
+
     #region Helpers
 
     private static string GetRouteByIdRoute(Guid id)
