@@ -17,6 +17,10 @@ internal sealed class GetPolygonByIdHandler : IRequestHandler<GetPolygonByIdRequ
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        var polygon = await _repo.GetPolygonById(request.Id);
+        if (polygon == null)
+            return Results.NotFound();
+
+        return Results.Ok(polygon.Adapt<GetPolygonByIdResponse>());
     }
 }

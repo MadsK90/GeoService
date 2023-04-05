@@ -59,7 +59,9 @@ public sealed class PolygonRepo : IPolygonRepo
 
     public async Task<Polygon?> GetPolygonById(Guid polygonId)
     {
-        return await _context.Polygons.FirstOrDefaultAsync(x => x.Id == polygonId);
+        return await _context.Polygons
+            .Include(x => x.Points)
+            .FirstOrDefaultAsync(x => x.Id == polygonId);
     }
 
     public async Task<bool> UpdatePolygon(Polygon polygon)

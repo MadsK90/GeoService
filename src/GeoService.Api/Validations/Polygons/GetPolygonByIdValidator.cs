@@ -4,5 +4,7 @@ public sealed class GetPolygonByIdValidator : AbstractValidator<GetPolygonByIdRe
 {
     public GetPolygonByIdValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
     }
 }

@@ -78,6 +78,68 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
 
     #endregion Add
 
+    #region Get
+
+    [Fact]
+    public async Task GetPolygonById_ReturnPolygon_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createPolygonRequest = GenerateCreatePolygonRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
+
+        _createdPolygons.Add(createResponse.Id);
+
+        //Act
+        var result = await httpClient.GetAsync(GetPolygonByIdRoute(createResponse.Id));
+        var response = await result.Content.ReadFromJsonAsync<GetPolygonByIdResponse>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        response.Should()
+            .NotBeNull()
+            .And.BeEquivalentTo(createPolygonRequest);
+    }
+
+    [Fact]
+    public async Task GetPolygonById_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetPolygonByIdRoute(Guid.NewGuid()));
+
+        //Assert
+
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetPolygonById_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.GetAsync(GetPolygonByIdRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And.HaveCount(1);
+    }
+
+    #endregion Get
+
     #region Helpers
 
     private static string GetPolygonByIdRoute(Guid id)
