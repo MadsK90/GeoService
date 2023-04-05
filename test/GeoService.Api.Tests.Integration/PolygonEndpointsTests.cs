@@ -282,6 +282,63 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
 
     #endregion Update
 
+    #region Delete
+
+    [Fact]
+    public async Task DeletePolygon_Return200_WhenExists()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createPolygonRequest = GenerateCreatePolygonRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
+
+        _createdPolygons.Add(createResponse.Id);
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeletePolygonRoute(createResponse.Id));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task DeletePolygon_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeletePolygonRoute(Guid.NewGuid()));
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task DeletePolygon_Return400_WhenIdEmpty()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+
+        //Act
+        var result = await httpClient.DeleteAsync(DeletePolygonRoute(Guid.Empty));
+        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        result.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        response.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(1);
+    }
+
+    #endregion Delete
+
     #region Helpers
 
     private static string GetPolygonByIdRoute(Guid id)

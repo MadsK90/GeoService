@@ -217,6 +217,7 @@ public sealed partial class FibreEndpointsTests : IClassFixture<WebApplicationFa
 
     [Fact]
     public async Task UpdateFibre_Return404_WhenNotFound()
+
     {
         //Arrange
         var httpClient = _factory.CreateClient();

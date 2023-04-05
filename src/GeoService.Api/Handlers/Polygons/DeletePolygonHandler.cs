@@ -17,6 +17,9 @@ internal sealed class DeletePolygonHandler : IRequestHandler<DeletePolygonReques
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        if (!await _repo.DeletePolygon(request.Id))
+            return Results.NotFound();
+
+        return Results.NoContent();
     }
 }

@@ -4,5 +4,7 @@ public sealed class DeletePolygonValidator : AbstractValidator<DeletePolygonRequ
 {
     public DeletePolygonValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
     }
 }
