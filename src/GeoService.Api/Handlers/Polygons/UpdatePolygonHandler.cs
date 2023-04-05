@@ -17,6 +17,13 @@ internal sealed class UpdatePolygonHandler : IRequestHandler<UpdatePolygonReques
         if (!validationResult.IsValid)
             return Results.BadRequest(validationResult.Errors);
 
-        throw new NotImplementedException("");
+        var polygon = request.Adapt<Polygon>();
+        if (polygon == null)
+            return Results.BadRequest();
+
+        if (!await _repo.UpdatePolygon(polygon))
+            return Results.NotFound();
+
+        return Results.Ok(polygon.Adapt<UpdatePolygonResponse>());
     }
 }

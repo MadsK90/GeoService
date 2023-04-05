@@ -131,7 +131,7 @@ static void AddEndpoints(WebApplication app)
             .CacheOutput()
             .WithTags("polygon");
 
-        app.MediatePut<UpdateCabinetRequest, UpdateCabinetResponse>(ApiRoutes.Polygons.UpdatePolygon)
+        app.MediatePut<UpdatePolygonRequest, UpdatePolygonResponse>(ApiRoutes.Polygons.UpdatePolygon)
             .CacheOutput()
             .WithTags("polygon");
     }

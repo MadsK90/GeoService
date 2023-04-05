@@ -140,6 +140,148 @@ public sealed partial class PolygonEndpointsTests : IClassFixture<WebApplication
 
     #endregion Get
 
+    #region Update
+
+    [Fact]
+    public async Task UpdatePolygon_UpdatesPolygon_WhenDataIsCorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createPolygonRequest = GenerateCreatePolygonRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
+        _createdPolygons.Add(createResponse.Id);
+
+        //Act
+        var updatePolygonRequest = new UpdatePolygonRequest
+        {
+            Id = createResponse.Id,
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 5,
+                    Longitude = 6
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 7,
+                    Longitude = 8
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 9,
+                    Longitude = 10
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 11,
+                    Longitude = 12
+                }
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Polygons.UpdatePolygon, updatePolygonRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdatePolygonResponse>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.OK);
+
+        updateResponse.Should()
+            .BeEquivalentTo(updatePolygonRequest);
+    }
+
+    [Fact]
+    public async Task UpdatePolygon_Return400_And_ValidationErrors_WhenDataIsIncorrect()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createPolygonRequest = GenerateCreatePolygonRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
+        _createdPolygons.Add(createResponse.Id);
+
+        //Act
+        var updatePolygonRequest = new UpdatePolygonRequest
+        {
+            Id = createResponse.Id,
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 200,
+                    Longitude = 200
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 200,
+                    Longitude = 200
+                },
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Polygons.UpdatePolygon, updatePolygonRequest);
+        var updateResponse = await updateResult.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        updateResponse.Should()
+            .NotBeNullOrEmpty()
+            .And
+            .HaveCount(5);
+    }
+
+    [Fact]
+    public async Task UpdatePolygon_Return404_WhenNotFound()
+    {
+        //Arrange
+        var httpClient = _factory.CreateClient();
+        var createPolygonRequest = GenerateCreatePolygonRequest();
+        var createResult = await httpClient.PostAsJsonAsync(ApiRoutes.Polygons.CreatePolygon, createPolygonRequest);
+        var createResponse = await createResult.Content.ReadFromJsonAsync<CreatePolygonResponse>() ?? throw new Exception("");
+        _createdPolygons.Add(createResponse.Id);
+
+        //Act
+        var updatePolygonRequest = new UpdatePolygonRequest
+        {
+            Id = Guid.NewGuid(),
+            Points = new PointDoubleDto[]
+            {
+                new PointDoubleDto
+                {
+                    Latitude = 5,
+                    Longitude = 6
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 7,
+                    Longitude = 8
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 9,
+                    Longitude = 10
+                },
+                new PointDoubleDto
+                {
+                    Latitude = 13,
+                    Longitude = 12
+                }
+            }
+        };
+
+        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Polygons.UpdatePolygon, updatePolygonRequest);
+
+        //Assert
+        updateResult.StatusCode.Should()
+            .Be(HttpStatusCode.NotFound);
+    }
+
+    #endregion Update
+
     #region Helpers
 
     private static string GetPolygonByIdRoute(Guid id)
