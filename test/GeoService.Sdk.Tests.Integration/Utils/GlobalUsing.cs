@@ -20,3 +20,5 @@ global using GeoService.Contracts.V1.Requests.Polygons;
 global using GeoService.Contracts.V1.Responses.Polygons;
 global using GeoService.Contracts.V1.Requests.Routes;
 global using GeoService.Contracts.V1.Responses.Routes;
+global using GeoService.Contracts.V1.Requests.Splitters;
+global using GeoService.Contracts.V1.Responses.Splitters;

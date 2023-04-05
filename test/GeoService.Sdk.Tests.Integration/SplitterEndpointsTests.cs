@@ -1,4 +1,7 @@
-﻿namespace GeoService.Api.Tests.Integration;
+﻿using GeoService.Contracts.V1.Requests.Cabinets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace GeoService.Sdk.Tests.Integration;
 
 public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
@@ -6,12 +9,14 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
 
     private readonly WebApplicationFactory<IApiMarker> _factory;
     private readonly List<Guid> _createdSplitters = new();
+    private readonly IGeoServiceApi _sut;
 
     #endregion Fields
 
     public SplitterEndpointsTests(WebApplicationFactory<IApiMarker> factory)
     {
         _factory = factory;
+        _sut = RestService.For<IGeoServiceApi>(_factory.CreateClient());
     }
 
     #region Add
@@ -20,23 +25,20 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
     public async Task CreateSplitter_CreatesSplitter_WhenDataIsCorrect()
     {
         //Arrange
-        var httpClient = _factory.CreateClient();
         var createSplitterRequest = GenerateCreateSplitterRequest();
 
-        //Act
-        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
-        var response = await result.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
-
-        _createdSplitters.Add(response.Id);
+        var response = await _sut.CreateSplitterAsync(createSplitterRequest) ?? throw new Exception("");
+        if (response.Content != null)
+            _createdSplitters.Add(response.Content.Id);
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        response.Should()
+        response.Content.Should()
             .NotBeNull();
 
-        response!.Id.Should()
+        response.Content!.Id.Should()
             .NotBeEmpty();
     }
 
@@ -44,21 +46,20 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
     public async Task CreateSplitter_Return400_And_ValidationErrors_WhenDataIsIncorrect()
     {
         //Arrange
-        var httpClient = _factory.CreateClient();
         var createSplitterRequest = GenerateCreateSplitterRequest();
         createSplitterRequest.Name = "b";
         createSplitterRequest.Latitude = -200;
         createSplitterRequest.Longitude = 200;
 
         //Act
-        var result = await httpClient.PostAsJsonAsync(ApiRoutes.Splitters.CreateSplitter, createSplitterRequest);
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.CreateSplitterAsync(createSplitterRequest) ?? throw new Exception("");
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(3);
@@ -79,14 +80,13 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
         _createdSplitters.Add(createResponse.Id);
 
         //Act
-        var result = await httpClient.GetAsync(GetSplitterByIdRoute(createResponse.Id));
-        var response = await result.Content.ReadFromJsonAsync<GetSplitterByIdResponse>();
+        var response = await _sut.GetSplitterByIdAsync(new GetSplitterByIdRequest { Id = createResponse.Id });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-        response.Should()
+        response.Content.Should()
             .NotBeNull()
             .And
             .BeEquivalentTo(createSplitterRequest);
@@ -95,33 +95,26 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
     [Fact]
     public async Task GetSplitterById_Return404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.GetAsync(GetSplitterByIdRoute(Guid.NewGuid()));
+        var response = await _sut.GetSplitterByIdAsync(new GetSplitterByIdRequest { Id = Guid.NewGuid() });
 
         //Assert
-
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task GetSplitterById_Return400_And_ValidationErrors_WhenDataIsIncorrect()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.GetAsync(GetSplitterByIdRoute(Guid.Empty));
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.GetSplitterByIdAsync(new GetSplitterByIdRequest { Id = Guid.Empty });
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(1);
@@ -149,14 +142,13 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
             Longitude = 30,
             Name = "XYZ"
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
-        var updateResponse = await updateResult.Content.ReadFromJsonAsync<UpdateSplitterResponse>();
+        var response = await _sut.UpdateSplitterAsync(updateSplitterRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
-        updateResponse.Should()
+
+        response.Content.Should()
             .BeEquivalentTo(updateSplitterRequest);
     }
 
@@ -178,15 +170,14 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
             Longitude = 200,
             Name = "AB"
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
-        var updateResponse = await updateResult.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.UpdateSplitterAsync(updateSplitterRequest);
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        updateResponse.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(3);
@@ -195,9 +186,6 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
     [Fact]
     public async Task UpdateSplitter_Retur404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
         var updateSplitterRequest = new UpdateSplitterRequest
         {
@@ -206,11 +194,10 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
             Latitude = 40,
             Longitude = 50
         };
-
-        var updateResult = await httpClient.PutAsJsonAsync(ApiRoutes.Splitters.UpdateSplitter, updateSplitterRequest);
+        var response = await _sut.UpdateSplitterAsync(updateSplitterRequest);
 
         //Assert
-        updateResult.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
@@ -228,42 +215,36 @@ public sealed partial class SplitterEndpointsTests : IClassFixture<WebApplicatio
         var createResponse = await createResult.Content.ReadFromJsonAsync<CreateSplitterResponse>() ?? throw new Exception("");
 
         //Act
-        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(createResponse.Id));
+        var response = await _sut.DeleteSplitterAsync(new DeleteSplitterRequest { Id = createResponse.Id });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
     public async Task DeleteSplitter_Return404_WhenNotFound()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(Guid.NewGuid()));
+        var response = await _sut.DeleteSplitterAsync(new DeleteSplitterRequest { Id = Guid.NewGuid() });
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task DeleteSplitter_Return400_WhenIdEmpty()
     {
-        //Arrange
-        var httpClient = _factory.CreateClient();
-
         //Act
-        var result = await httpClient.DeleteAsync(DeleteSplitterRoute(Guid.Empty));
-        var response = await result.Content.ReadFromJsonAsync<List<ValidationFailure>>();
+        var response = await _sut.DeleteSplitterAsync(new DeleteSplitterRequest { Id = Guid.Empty });
+        var error = await response.Error!.GetContentAsAsync<List<ValidationFailure>>();
 
         //Assert
-        result.StatusCode.Should()
+        response.StatusCode.Should()
             .Be(HttpStatusCode.BadRequest);
 
-        response.Should()
+        error.Should()
             .NotBeNullOrEmpty()
             .And
             .HaveCount(1);

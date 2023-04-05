@@ -1,6 +1,4 @@
-﻿using GeoService.Contracts.V1.Requests.Cabinets;
-
-namespace GeoService.Sdk.Tests.Integration;
+﻿namespace GeoService.Sdk.Tests.Integration;
 
 public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {
