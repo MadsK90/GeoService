@@ -1,6 +1,4 @@
-﻿using GeoService.Contracts.V1.Requests.Polygons;
-
-namespace GeoService.Api.Tests.Integration;
+﻿namespace GeoService.Api.Tests.Integration;
 
 public sealed partial class RouteEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>, IAsyncLifetime
 {

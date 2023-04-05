@@ -2,5 +2,5 @@
 
 public class DeleteSplitterRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

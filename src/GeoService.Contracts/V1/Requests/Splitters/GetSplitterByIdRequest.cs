@@ -2,5 +2,5 @@
 
 public class GetSplitterByIdRequest : IHttpRequest
 {
-	
+    public Guid Id { get; set; }
 }

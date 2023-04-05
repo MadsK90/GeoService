@@ -4,5 +4,7 @@ public sealed class GetSplitterByIdValidator : AbstractValidator<GetSplitterById
 {
     public GetSplitterByIdValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
     }
 }

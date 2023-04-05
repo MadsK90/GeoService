@@ -4,5 +4,7 @@ public sealed class DeleteSplitterValidator : AbstractValidator<DeleteSplitterRe
 {
     public DeleteSplitterValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
     }
 }

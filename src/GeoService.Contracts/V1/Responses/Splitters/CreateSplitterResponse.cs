@@ -2,5 +2,5 @@
 
 public sealed class CreateSplitterResponse
 {
-    
+    public Guid Id { get; set; }
 }
