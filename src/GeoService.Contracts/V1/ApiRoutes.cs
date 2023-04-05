@@ -45,4 +45,12 @@ public static class ApiRoutes
         public const string DeleteRoute = $"{Base}/routes/{{id}}";
         public const string UpdateRoute = $"{Base}/routes";
     }
+
+    public static class Splitters
+    {
+        public const string GetSplitterById = $"{Base}/splitters/{{id}}";
+        public const string CreateSplitter = $"{Base}/splitters";
+        public const string DeleteSplitter = $"{Base}/splitters/{{id}}";
+        public const string UpdateSplitter = $"{Base}/splitters";
+    }
 }

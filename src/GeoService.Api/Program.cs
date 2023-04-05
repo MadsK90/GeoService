@@ -47,6 +47,7 @@ static void AddEndpoints(WebApplication app)
     AddManholeEndpoints(app);
     AddPolygonEndpoints(app);
     AddRouteEndpoints(app);
+    AddSplitterEndpoints(app);
 
     #region Local Functions
 
@@ -153,6 +154,27 @@ static void AddEndpoints(WebApplication app)
         app.MediatePut<UpdateRouteRequest, UpdateRouteResponse>(ApiRoutes.Routes.UpdateRoute)
             .CacheOutput()
             .WithTags("route");
+    }
+
+    static void AddSplitterEndpoints(WebApplication app)
+    {
+        app.MediatePost<CreateSplitterRequest, CreateSplitterResponse>(ApiRoutes.Splitters.CreateSplitter)
+            .CacheOutput()
+            .WithTags("splitter")
+            .Produces(400);
+
+        app.MediateGet<GetSplitterByIdRequest, GetSplitterByIdResponse>(ApiRoutes.Splitters.GetSplitterById)
+            .CacheOutput()
+            .WithTags("splitter")
+            .Produces(400);
+
+        app.MediateDelete<DeleteSplitterRequest>(ApiRoutes.Splitters.DeleteSplitter)
+            .CacheOutput()
+            .WithTags("splitter");
+
+        app.MediatePut<UpdateSplitterRequest, UpdateSplitterResponse>(ApiRoutes.Splitters.UpdateSplitter)
+            .CacheOutput()
+            .WithTags("splitter");
     }
 
     #endregion Local Functions
