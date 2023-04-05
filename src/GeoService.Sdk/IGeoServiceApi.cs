@@ -49,4 +49,52 @@ public interface IGeoServiceApi
     Task<ApiResponse<IResult>> DeleteManholeAsync(DeleteManholeRequest request);
 
     #endregion Manholes
+
+    #region Polygons
+
+    [Post(ApiRoutes.Polygons.CreatePolygon)]
+    Task<ApiResponse<CreatePolygonResponse>> CreatePolygonAsync(CreatePolygonRequest request);
+
+    [GetWithReplaceId(ApiRoutes.Polygons.GetPolygonById)]
+    Task<ApiResponse<GetPolygonByIdResponse>> GetPolygonByIdAsync(GetPolygonByIdRequest request);
+
+    [Put(ApiRoutes.Polygons.UpdatePolygon)]
+    Task<ApiResponse<UpdatePolygonResponse>> UpdatePolygonAsync(UpdatePolygonRequest request);
+
+    [DeleteWithReplaceId(ApiRoutes.Polygons.DeletePolygon)]
+    Task<ApiResponse<IResult>> DeletePolygonAsync(DeletePolygonRequest request);
+
+    #endregion Polygons
+
+    #region Routes
+
+    [Post(ApiRoutes.Routes.CreateRoute)]
+    Task<ApiResponse<CreateRouteResponse>> CreateRouteAsync(CreateRouteRequest request);
+
+    [GetWithReplaceId(ApiRoutes.Routes.GetRouteById)]
+    Task<ApiResponse<GetRouteByIdResponse>> GetRouteByIdAsync(GetRouteByIdRequest request);
+
+    [Put(ApiRoutes.Routes.UpdateRoute)]
+    Task<ApiResponse<UpdateRouteResponse>> UpdateRouteAsync(UpdateRouteRequest request);
+
+    [DeleteWithReplaceId(ApiRoutes.Routes.DeleteRoute)]
+    Task<ApiResponse<IResult>> DeleteRouteAsync(DeleteRouteRequest request);
+
+    #endregion Routes
+
+    #region Splitters
+
+    [Post(ApiRoutes.Splitters.CreateSplitter)]
+    Task<ApiResponse<CreateSplitterResponse>> CreateSplitterAsync(CreateSplitterRequest request);
+
+    [GetWithReplaceId(ApiRoutes.Splitters.GetSplitterById)]
+    Task<ApiResponse<GetSplitterByIdResponse>> GetSplitterByIdAsync(GetSplitterByIdRequest request);
+
+    [Put(ApiRoutes.Splitters.UpdateSplitter)]
+    Task<ApiResponse<UpdateSplitterResponse>> UpdateSplitterAsync(UpdateSplitterRequest request);
+
+    [DeleteWithReplaceId(ApiRoutes.Splitters.DeleteSplitter)]
+    Task<ApiResponse<IResult>> DeleteSplitterAsync(DeleteSplitterRequest request);
+
+    #endregion Splitters
 }
